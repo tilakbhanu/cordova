@@ -40,5 +40,5 @@ jobs:
       run: npm run cordova:ios:build
 
     - name: build cordova iOS project
-      run: (cd my-cordova-ios-app && npm run cordova build ios)
+      run: (cd my-cordova-ios-app && cordova build ios)
 
