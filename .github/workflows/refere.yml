@@ -1,0 +1,71 @@
+name: Build and Deploy Cordova iOS App
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18.20.2'
+        
+    - name: Install Node - gym
+      run: npm install -g node-gyp@9.4.1
+
+    - name: Install python
+      run: brew install python@3.9
+         
+    - name: Install cocoapods
+      run: sudo gem install cocoapods -v 1.12.1
+
+    - name: Install Cordova
+      run: npm install -g cordova@12.0.0
+   
+    - name: Install project dependencies
+      run: npm install
+
+    - name: Add iOS platform
+      run: (cd /path/to/TriDotCordovaApp && cordova platform add ios)
+
+    - name: Build iOS project
+      run: npm run cordova:ios:build
+
+   
+    - name: Create Fastfile
+      run: |
+        echo "lane :release do
+          build_app(
+            workspace: 'platforms/ios/YourAppName.xcworkspace',
+            scheme: 'YourAppName',
+            export_method: 'app-store'
+          )
+          upload_to_app_store(
+            username: ENV['APPLE_ID'],
+            app_identifier: 'com.yourcompany.yourapp',
+            api_key: {
+              key_id: ENV['APPLE_KEY_ID'],
+              issuer_id: ENV['APPLE_ISSUER_ID'],
+              key_content: ENV['APPLE_PRIVATE_KEY'],
+              duration: 1200 # optional duration of token validity in seconds
+            }
+          )
+        end" > ios/fastlane/Fastfile
+
+    - name: Build and upload to App Store
+      run: fastlane release
+      env:
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+        APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        APPLE_PRIVATE_KEY: ${{ secrets.APPLE_PRIVATE_KEY }}
