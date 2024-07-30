@@ -34,7 +34,7 @@ jobs:
       run: npm install
 
     - name: Add iOS platform
-      run: (cd /path/to/TriDotCordovaApp && cordova platform add ios)
+      run: (cd my-cordova-ios-app && cordova platform add ios)
 
     - name: Build iOS project
       run: npm run cordova:ios:build
