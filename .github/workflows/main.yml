@@ -1,9 +1,6 @@
 name: Build and Deploy Cordova iOS App
-
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   build:
